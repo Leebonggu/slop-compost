@@ -1,0 +1,19 @@
+{
+  "name": "slop-compost",
+  "version": "0.1.0",
+  "description": "Turn abandoned side projects and AI slop into compost for your next idea — mines parts and lessons, then proposes two independent tracks: revive the old idea, or grow a new one.",
+  "author": {
+    "name": "Leebonggu"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Leebonggu/slop-compost",
+  "keywords": [
+    "side-project",
+    "post-mortem",
+    "compost",
+    "ideation",
+    "abandoned-projects",
+    "lessons-learned",
+    "skill"
+  ]
+}

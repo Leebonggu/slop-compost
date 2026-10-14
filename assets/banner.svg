@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="400" viewBox="0 0 1280 400" role="img" aria-labelledby="t d">
+<title id="t">slop-compost</title><desc id="d">A green sprout with two branches growing out of layered soil filled with discarded code, documents and a broken lightbulb. Your slop is compost for the next idea.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dff3fb"/><stop offset="1" stop-color="#e3f8ec"/></linearGradient>
+<linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b0825a"/><stop offset="1" stop-color="#9a6c46"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7d5435"/><stop offset="1" stop-color="#5f3d27"/></linearGradient>
+<linearGradient id="lf" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2f9e57"/><stop offset="1" stop-color="#5cc46f"/></linearGradient>
+<radialGradient id="gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff3a8" stop-opacity=".75"/><stop offset="1" stop-color="#fff3a8" stop-opacity="0"/></radialGradient>
+<radialGradient id="gl2" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff6c8" stop-opacity=".9"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1280" height="400" fill="url(#bg)"/>
+<circle cx="1120" cy="80" r="150" fill="url(#gl2)"/>
+<path d="M560 262C700 236 820 250 900 236" fill="none" stroke="#8cc7d9" stroke-width="2" stroke-opacity=".5"/>
+<!-- soil -->
+<path d="M0 300C180 290 330 310 560 300S940 284 1280 298V400H0Z" fill="url(#g2)"/>
+
+<g fill="none" stroke="#d9b48a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+ <g transform="translate(150 338)"><path d="M0 0q-9 0-9 9v8q0 7-8 8q8 1 8 8v8q0 9 9 9"/><path d="M34 0q9 0 9 9v8q0 7 8 8q-8 1-8 8v8q0 9-9 9" transform="translate(20 0)"/></g>
+ <g transform="translate(420 345) rotate(-14)"><path d="M0 0h42l14 14v40h-56z" fill="#e8d4b4" stroke="none"/><path d="M42 0v14h14" stroke="#d9b48a" stroke-width="3"/><path d="M10 28h30M10 38h22" stroke="#d9b48a" stroke-width="3"/></g>
+ <g transform="translate(720 336)"><circle cx="0" cy="14" r="20" fill="#e6c98f" stroke="none"/><rect x="-10" y="32" width="20" height="12" rx="3" fill="#d9b48a" stroke="none"/><path d="M-6 6l6 10l-6 6l6 8" stroke="#6a4529" stroke-width="3"/></g>
+ <g transform="translate(1110 340) rotate(10)"><path d="M0 0q-9 0-9 9v8q0 7-8 8q8 1 8 8v8q0 9 9 9"/><path d="M0 0q9 0 9 9v8q0 7 8 8q-8 1-8 8v8q0 9-9 9" transform="translate(30 0)"/></g>
+ <g transform="translate(1215 352)"><circle cx="0" cy="0" r="9" fill="#e6c98f" stroke="none"/><rect x="-5" y="9" width="10" height="7" rx="2" fill="#d9b48a" stroke="none"/></g>
+</g>
+<path d="M0 304C200 282 380 318 620 302S1020 280 1280 300V330C1020 312 880 340 620 330S200 312 0 334Z" fill="url(#g1)" opacity=".0"/>
+<path d="M0 346C220 326 420 362 680 346S1040 330 1280 350V400H0Z" fill="#4b2f1e" opacity=".78"/>
+<path d="M0 296C200 276 380 310 620 294S1020 272 1280 292V318C1020 300 880 326 620 318S200 304 0 322Z" fill="url(#g1)"/>
+<g fill="#d9b48a" opacity=".55"><circle cx="90" cy="372" r="3"/><circle cx="300" cy="384" r="2.5"/><circle cx="560" cy="376" r="3"/><circle cx="860" cy="386" r="2.5"/><circle cx="1000" cy="372" r="3"/><circle cx="1180" cy="388" r="3"/><circle cx="640" cy="330" r="2.5"/><circle cx="250" cy="322" r="2.5"/></g>
+<!-- sprout -->
+<g stroke="#2a8a4c" stroke-width="7" fill="none" stroke-linecap="round">
+<path d="M980 302C980 262 974 222 986 168"/>
+<path d="M978 250C972 222 950 200 922 188"/>
+<path d="M982 222C990 196 1018 180 1052 172"/>
+</g>
+<ellipse cx="980" cy="302" rx="22" ry="6" fill="#b0825a"/>
+<circle cx="1068" cy="150" r="90" fill="url(#gl)"/>
+<g transform="translate(922 188) rotate(-158)"><path d="M0 0C23 -22 64 -22 92 0C64 22 23 22 0 0Z" fill="url(#lf)" /><path d="M6 0H78" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" stroke-linecap="round"/></g>
+<g transform="translate(986 168) rotate(-100)"><path d="M0 0C22 -21 60 -21 86 0C60 21 22 21 0 0Z" fill="url(#lf)" /><path d="M6 0H73" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" stroke-linecap="round"/></g>
+<g transform="translate(1052 172) rotate(-20)"><path d="M0 0C26 -25 73 -25 104 0C73 25 26 25 0 0Z" fill="#b6ee7a" /><path d="M6 0H88" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" stroke-linecap="round"/></g>
+<g transform="translate(979 262) rotate(-30)"><path d="M0 0C12 -12 35 -12 50 0C35 12 12 12 0 0Z" fill="url(#lf)" /><path d="M6 0H42" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" stroke-linecap="round"/></g>
+<circle cx="1146" cy="128" r="3" fill="#b6ee7a" opacity=".9"/><circle cx="1120" cy="96" r="2" fill="#b6ee7a" opacity=".7"/><circle cx="1170" cy="160" r="2" fill="#b6ee7a" opacity=".6"/>
+<!-- text -->
+<g font-family='ui-sans-serif, -apple-system, "Segoe UI", Inter, Helvetica, Arial, sans-serif'>
+<text x="80" y="170" font-size="80" font-weight="800" letter-spacing="-2" fill="#12304a">slop-<tspan fill="#2a9a55">compost</tspan></text>
+<text x="84" y="216" font-size="26" font-weight="500" fill="#3f6178">Your slop is compost for the next idea.</text>
+<text x="84" y="256" font-size="16" font-weight="600" letter-spacing="2.5" fill="#5b8ba3">REVIVE THE OLD  ·  GROW THE NEW</text>
+</g>
+</svg>

@@ -1,0 +1,10 @@
+# Local tool state
+.omc/
+.DS_Store
+node_modules/
+
+# Never commit a personal ledger
+.slop-compost/
+
+# Mermaid render checks
+*.mmd.svg

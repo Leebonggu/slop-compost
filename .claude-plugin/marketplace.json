@@ -1,0 +1,14 @@
+{
+  "name": "slop-compost-marketplace",
+  "owner": {
+    "name": "Leebonggu"
+  },
+  "description": "Marketplace for slop-compost, a Claude Code skill that turns abandoned side projects and AI slop into compost (parts, lessons, two-track directions) for your next idea.",
+  "plugins": [
+    {
+      "name": "slop-compost",
+      "source": "./",
+      "description": "Turn abandoned side projects and AI slop into compost for your next idea — mines parts and lessons, then proposes two independent tracks: revive the old idea, or grow a new one."
+    }
+  ]
+}
