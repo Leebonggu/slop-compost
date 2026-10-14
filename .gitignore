@@ -8,3 +8,6 @@ node_modules/
 
 # Mermaid render checks
 *.mmd.svg
+
+# Python bytecode (tests import the script)
+__pycache__/

@@ -1,0 +1,2 @@
+{"id":"idea-factory#p1","artifact_id":"idea-factory","kind":"module","location":"src/rss/parse.ts:1-88","description":"RSS fetch + dedupe by URL hash","why_reusable":"any feed-based product needs it; has tests","run":"2026-10-01","at":"2026-10-01T21:04:00+09:00"}
+{"id":"podcast-idea#p1","artifact_id":"podcast-idea","kind":"problem","location":"text:1","description":"Niche B2B newsletters have no audio version","why_reusable":"names a buyer","run":"2026-10-08","at":"2026-10-08T21:04:00+09:00"}

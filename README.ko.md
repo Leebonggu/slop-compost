@@ -27,13 +27,15 @@
 | 넣은 것 | 돌아온 것 |
 |---|---|
 | “부부 가계부, 정산 로직까지 만들고 접음” | 정산 로직은 남기고, 이번 주엔 랜딩 한 장만. 100명 방문 후 이메일 **10건 이상이면 성공, 3건 미만이면 중단** |
-| 코드와 메모에서 반복된 행동 | “외부에 보여 주기 전에 기능부터 쌓는다.” 근거: `idea-factory:IMPLEMENTATION-NOTES.md:5-16`, `couple-ledger:text:1` |
+| 코드와 메모에 반복해서 나타난 행동 | “외부에 보여 주기 전에 기능부터 쌓는다.” 근거: `idea-factory:IMPLEMENTATION-NOTES.md:5-16`, `couple-ledger:text:1` |
 | 수집·중복 제거 코드 + 리포트 아이디어 | 대행사에 수작업 리포트 샘플 보내기. **10곳 중 답장 3곳 이상 + 유료 파일럿 1곳이면 성공, 답장 1곳 이하면 중단** |
 | 다음 실행에서 알려 준 진행 상황 | “랜딩 만들어 방문 **40**, 가입 **2**.” 지난 선택을 기억하고 여기서 이어감 |
 
 원래 가계부 제안은 “B2C라 안 맞음”으로 기각했어요. 추천을 따르지 않은 이유도 다음 실행의 재료가 됩니다. [실행 로그 펼쳐 보기](#run-log)
 
 ## 시작하기
+
+Python 3.9 이상이 필요해요. 스크립트는 표준 라이브러리만 쓰고, 네트워크에 접속하지 않아요.
 
 Claude Code 안에서 설치하고:
 
@@ -45,7 +47,7 @@ Claude Code 안에서 설치하고:
 만들다 만 걸 넘겨주세요. 폴더 대신 GitHub URL이나 따옴표로 감싼 아이디어 한 줄도 됩니다.
 
 ```text
-/slop-compost:slop-compost ~/playground/my-project
+/slop-compost:compost ~/playground/my-project
 ```
 
 자연어로 “만들다 만 거 정리해서 아이디어 되살려 줘: ~/playground/my-project”라고 해도 돼요.
@@ -63,8 +65,15 @@ flowchart LR
 ```
 
 - **읽고 짚어요.** 여러 프로젝트에서 반복된 행동을 찾고, 멈춘 이유가 맞는지 한 번에 물어요.
-- **두 방향을 따로 생각해요.** 원래 걸 살리는 쪽(트랙 A)과 새 아이디어 쪽(트랙 B)은 서로의 답을 보지 않아요. 억지로 살릴 이유가 없으면 부품만 남기자고 할 수도 있어요.
+- **두 방향을 따로 생각해요.** 원래 걸 살리는 트랙 A와 새 아이디어를 찾는 트랙 B는 서로의 답을 보지 않아요. 억지로 살릴 이유가 없으면 부품만 남기자고 할 수도 있어요.
 - **선택을 기억해요.** 채택·보류·기각과 후속 결과를 내 컴퓨터의 `~/.slop-compost`에 쌓아요. 다음에는 그 기록도 참고해요.
+
+## 토큰을 아끼는 구조
+
+- 지문 계산, 파일 선택, 기록 읽기·쓰기, 형식 규칙 검사, 판단 답변 해석, 출처 관리는 작은 Python 스크립트가 맡아요. 결과를 짧은 JSON 한 줄로 돌려줘서 모델이 기록 원본을 통째로 읽지 않아도 돼요.
+- 단계별 안내·평가 기준·기록 형식은 `references/`에 두고, 해당 단계에서 필요할 때만 읽어요.
+- 두 트랙의 보조 AI는 기본으로 Sonnet을 써요. `SLOP_COMPOST_TRACK_MODEL`로 바꿀 수 있어요.
+- 프로젝트마다 스크립트가 미리 고른 핵심 파일만 최대 50개 읽어요.
 
 ## 지키는 규칙
 
@@ -85,7 +94,7 @@ flowchart LR
 
 성공 사례만 보면 다 될 것 같으니 실패 사례도 찾게 했어요. “시장 검증하기”로 끝나지 않도록 이번 주 할 일과 숫자를 요구하고요. 교훈도 틀렸는지 확인할 수 있어야 쓸모가 있어요.
 
-규칙 개선은 몰래 하지 않아요. 같은 규칙 위반이 3회 이상 실행에 걸쳐 5건 이상 쌓이면 개선을 제안해요. 승인한 내용은 로컬 `overrides.md`에 남으므로 플러그인 업데이트에도 유지됩니다. 자세한 내용은 [설계 문서](docs/DESIGN.md)와 [스킬 지시문](skills/slop-compost/SKILL.md)에 있어요.
+규칙 개선은 몰래 하지 않아요. 같은 규칙 위반이 3회 이상 실행에 걸쳐 5건 이상 쌓이면 개선을 제안해요. 승인한 내용은 로컬 `overrides.md`에 남으므로 플러그인 업데이트에도 유지됩니다. 자세한 내용은 [설계 문서](docs/DESIGN.md)와 [스킬 지시문](skills/compost/SKILL.md)에 있어요. 버전별 변경은 [변경 기록](CHANGELOG.md)에서 볼 수 있어요.
 
 </details>
 
@@ -105,26 +114,37 @@ flowchart LR
 | `disquiet` | 국내 메이커의 제품과 개발 기록 |
 | `exploding-topics` | 검색 관심도가 오르는 주제 |
 
-기본 목록에서는 자동 접근 차단을 이유로 Product Hunt·Reddit·Indie Hackers를 제외했어요. 유료·구독 제한 콘텐츠도 가져오지 않아요. [출처별 접근 규칙](skills/slop-compost/sources/defaults.md)
+기본 목록에서는 자동 접근 차단을 이유로 Product Hunt·Reddit·Indie Hackers를 제외했어요. 유료·구독 제한 콘텐츠도 가져오지 않아요. [출처별 접근 규칙](skills/compost/assets/default-sources.md)
+
+출처 관리는 별도 스킬로 불러요:
 
 ```text
-/slop-compost:slop-compost sources list
-/slop-compost:slop-compost sources add my-notes
-# 질문에 한 줄로 답하기: local, ~/my-notes, trend
-/slop-compost:slop-compost sources disable trustmrr
-/slop-compost:slop-compost sources remove disquiet
+/slop-compost:sources list | add [id] | remove <id> | edit <id> | enable <id> | disable <id>
 ```
 
-내 자료도 `local` 출처로 붙일 수 있어요. 폴더나 `~/my-scraper@data:items` 같은 git 참조를 읽으며, `git fetch`는 하지 않아요. 직접 모은 JSON에는 `title`, `summary`, `source_url`, `date`를 넣으면 됩니다. 마크다운도 돼요. [출처 관리 방법](skills/slop-compost/sources/README.md)
+```text
+/slop-compost:sources list
+/slop-compost:sources add my-notes
+# 질문에 한 줄로 답하기: local, ~/my-notes, trend
+/slop-compost:sources disable trustmrr
+/slop-compost:sources remove disquiet
+```
+
+내 자료도 `local` 출처로 붙일 수 있어요. 폴더나 `~/my-scraper@data:items` 같은 git 참조를 읽으며, `git fetch`는 하지 않아요. 직접 모은 JSON에는 `title`, `summary`, `source_url`, `date`를 넣으면 됩니다. 마크다운도 돼요. [출처 관리 방법](skills/compost/references/sources.md)
 
 ## 알아 둘 것
 
-- **가볍진 않아요.** 작성자의 실측은 2회 합계 약 **43만 토큰**, 1회 약 **8분**이었어요. 입력에 따라 달라지며 프로젝트당 핵심 파일은 최대 50개를 읽어요.
+- **비용은 입력에 따라 달라요.** 작성자가 v0.1에서 측정한 값은 2회 합계 약 **43만 토큰**, 1회 약 **8분**이었어요.
 - **작은 추가 입력은 덜 읽어요.** 증분 실행에서 새 입력이 아이디어나 글 하나뿐이면, 경량 모드로 외부 출처를 범주당 1개로 줄여요(실패 사례 출처는 그대로). `--full`을 붙이면 전체 재분석합니다.
-- **두 번째부터 기록이 빛나요.** 첫 실행도 부품과 패턴을 주지만, 지난 선택과 실제 시도 결과를 참고하려면 기록이 필요해요.
+- **두 번째부터 지난 기록도 참고해요.** 첫 실행도 부품과 패턴을 주지만, 지난 선택과 실제 시도 결과를 참고하려면 기록이 필요해요.
 - **외부 정보가 빈약하면 제안도 빈약해요.** 오래되거나 얕은 검색 결과로 수요를 확신할 수는 없어요. AI가 근거를 잘못 읽을 수도 있으니 인용 위치를 확인해 주세요.
 - **검색어는 컴퓨터 밖으로 나가요.** 기록은 로컬에 저장하지만, 웹 검색어는 부품과 교훈에서 만들어요. 프로젝트를 설명하는 단어가 검색 서비스에 전달됩니다.
-- **아직 v0.1이에요.** 위 실측은 작성자의 두 번 실행 결과이며, 다양한 프로젝트에서의 품질을 보장하는 수치는 아니에요.
+- **아직 v0.2예요.** 작성자가 몇 번 실행해 본 것만으로 다양한 프로젝트에서의 품질을 보장할 수는 없어요.
+
+v0.2.0에서 한 번 실행한 실측:
+
+- 1회 약 **4분**, API 정가 기준 약 **2달러**(메인 Opus, 트랙 Sonnet). 입력은 파일 109개짜리 프로젝트 1개였고 핵심 파일 50개를 읽었어요.
+- 측정 방식이 v0.1과 달라 몇 % 줄었다고 말하진 않을게요.
 
 ## FAQ
 
@@ -144,19 +164,22 @@ claude plugin marketplace add Leebonggu/slop-compost
 claude plugin install slop-compost@slop-compost-marketplace --scope user
 ```
 
-스킬만 수동 설치하려면:
+두 스킬만 수동 설치하려면:
 
 ```bash
 git clone https://github.com/Leebonggu/slop-compost.git
 mkdir -p ~/.claude/skills
-cp -R slop-compost/skills/slop-compost ~/.claude/skills/
+cp -R slop-compost/skills/compost slop-compost/skills/sources ~/.claude/skills/
 ```
 
-수동 설치 후에는 `/slop-compost ~/playground/my-project`로 불러요. 출처 관리도 `/slop-compost sources list`처럼 앞부분만 줄이면 됩니다.
+복사 대신 두 폴더를 심볼릭 링크로 연결해도 돼요. `sources`가 `../compost/scripts/ledger.py`를 쓰므로, `compost`와 `sources`는 반드시 `~/.claude/skills/` 아래에 나란히 있어야 해요.
+
+수동 설치 후에는 `/compost ~/playground/my-project`, 출처 관리는 `/sources list`처럼 불러요.
 
 | 환경변수 | 기본값 | 역할 |
 |---|---|---|
 | `SLOP_COMPOST_HOME` | `~/.slop-compost` | 기록 저장 위치 |
+| `SLOP_COMPOST_TRACK_MODEL` | `sonnet` | 두 트랙의 보조 AI가 쓸 모델 |
 | `SLOP_COMPOST_LANG` | 자동 감지 | 출력 언어 지정: `ko` 또는 `en` |
 | `SLOP_COMPOST_FULL_EVERY` | `10` | 새 입력이 이만큼 쌓이면 지금까지 기록한 프로젝트 전체를 다시 훑어 패턴·교훈을 새로 계산 |
 
@@ -218,7 +241,7 @@ cp -R slop-compost/skills/slop-compost ~/.claude/skills/
 **실행 2 — 같은 날, 아이디어 한 줄 추가**
 
 ```text
-> /slop-compost "AI로 블로그 글 자동 작성해서 네이버에 올리는 툴, 글 품질 때문에 접음."
+> /slop-compost:compost "AI로 블로그 글 자동 작성해서 네이버에 올리는 툴, 글 품질 때문에 접음."
 
 모드: incremental (새 결과물 1, 장부의 기존 4개는 재분석 안 함)
 

@@ -1,6 +1,6 @@
-# slop-compost — 슬롭을 다음 아이디어의 거름으로 (설계 v0.3.1)
+# slop-compost — 슬롭을 다음 아이디어의 거름으로 (설계 v0.4)
 
-> 상태: v0.1 구현 · 작성 2026-10-15 · 개정 2026-10-15 (아래 "v0.2 변경점", "v0.3 변경점", "v0.3.1 변경점")
+> 상태: v0.2.0 구현 · 작성 2026-10-15 · 개정 2026-10-15 (아래 "v0.2 변경점", "v0.3 변경점", "v0.3.1 변경점", "v0.4 변경점")
 >
 > 실패는 성공의 어머니. 슬롭(실패작)은 버릴 쓰레기가 아니라 다음 아이디어의 거름이다.
 
@@ -38,7 +38,7 @@
 8. 기록 ──────── 장부 갱신, 개인 프로필 갱신, 시스템 개선 제안
 ```
 
-### 0. 회상 (`steps/00-recall.md`)
+### 0. 회상 (`references/steps/00-recall.md`)
 - **첫 실행** = 장부에 `state.json` 이 없음(8단계가 마지막에 쓰므로 중간에 끊긴 첫 실행은 다음에도 첫 실행). 첫 실행은 항상 `full` 모드다. 출처 목록(`sources.md`)은 파일이 없을 때만 기본값으로 시드한다.
 - 후속 확인 대상: 채택 AND stale 아님 AND (followup 없음 OR 마지막 result 가 done/stopped 아님). `touched` 는 조건이 아니다. 답하면 `skip_count` 는 0으로 리셋, result 없이 `no` 만 답하면 `not-started`.
 - 답은 관대하게 파싱한다(7단계와 같은 규칙, 한국어 대응어 `손댔음/안 함`, `진행중/완료/중단`, `스킵` 허용).
@@ -46,7 +46,7 @@
 - `skip`(또는 빠뜨린 항목)은 followup 을 남기지 않고 다음에 다시 묻는다. 단 `skip_count` 가 3회 연속이면 `stale` 표시 후 그만 묻는다.
 - 반복 패턴 요약을 다음 단계로 넘긴다(예: "채택 5건 중 착수 1건", "같은 교훈 3회째").
 
-### 1. 입력 (`steps/01-intake.md`)
+### 1. 입력 (`references/steps/01-intake.md`)
 - 받는 것: 로컬 폴더 경로, git 참조 `<repo>@<branch>:<path>`(fetch 없이 있는 ref 를 읽음, 지문 = `git rev-parse <branch>:<path>`), GitHub 저장소 URL, Notion 페이지, 자유 텍스트("이런 거 만들다 말았어"). 섞어서 받는다.
 - **실행 범위**는 이번 입력의 결과물이다. 장부에만 있는 결과물은 재분석하지 않는다(부품은 트랙 B 가 `parts.jsonl` 에서 쓴다).
 - 로컬 폴더 지문은 2단계와 같은 파일 필터를 쓴다: `.venv venv .next dist build __pycache__ .omc .claude logs node_modules` 디렉터리와 `*.db* *.sqlite* *.lock` 파일을 빼고, 소스·문서 확장자만 해시한다.
@@ -62,7 +62,7 @@
 | 로컬 폴더 | 경로 없음·권한 | 경로 확인, `ls -la` 결과로 원인 안내 |
 | 기타 URL | 로그인 필요 | 내보내기 파일로 넣기 |
 
-### 2. 분석 (`steps/02-analyze.md` + `rubrics/{code,writing,idea}.md`)
+### 2. 분석 (`references/steps/02-analyze.md` + `references/rubrics/{code,writing,idea}.md`)
 결과물마다:
 - **요약**: 무엇을 하려 했나, 어디까지 갔나(완성도).
 - **부품**: 다시 쓸 수 있는 조각. 종류(모듈·문장·문제 정의·데이터·디자인), 위치, 왜 쓸 만한지.
@@ -75,17 +75,17 @@
 - **반복 행동**: 예) "검증 전에 기능 7개", "랜딩 없이 백엔드부터".
 - 패턴에는 장부의 기존 결과물도 `(ledger)` 표시로 넣을 수 있다.
 
-### 3. 교훈 (`steps/03-lessons.md`)
-- 형식은 `templates/lesson.md`: 한 문장 + 근거 위치 + 반증 조건 + 관련 멈춘 이유.
+### 3. 교훈 (`references/steps/03-lessons.md`)
+- 형식은 `assets/templates/lesson.md`: 한 문장 + 근거 위치 + 반증 조건 + 관련 멈춘 이유.
 - 장부의 이전 교훈과 비교해 **반복 횟수**를 센다. 3회 이상이면 "구조적 습관"으로 올린다.
 - 원인 교훈("맥락이 없어서 결과가 뻔했다")과 반응 교훈("품질이 실망스러우면 고쳐 보기 전에 접는다")은 같은 실패를 다뤄도 별개 교훈이다.
 
-### 4. 의도 — 선택 (`steps/04-intent.md`)
+### 4. 의도 — 선택 (`references/steps/04-intent.md`)
 - 사용자가 생각·제약을 넣는다. 예) "B2B만", "이 부품은 꼭 살리고 싶다", "월 10만 원 이하 운영비".
 - 장부에 이전 의도가 있으면 먼저 묻는다: "지난번 'B2B만'을 유지할까요?"
 - 건너뛰어도 된다. 입력한 의도는 트랙 A·B 모두에 들어간다.
 
-### 5. 두 트랙 (`steps/05a-track-revive.md`, `steps/05b-track-new.md`)
+### 5. 두 트랙 (`references/steps/05a-track-revive.md`, `references/steps/05b-track-new.md`)
 오케스트레이터가 **두 서브에이전트를 병렬로**(Agent 도구, 한 메시지에서 동시에) 띄운다. 서로의 결과를 보지 못하게 한다(독립성). 입력은 트랙별 번들 파일(`input-a.md`, `input-b.md`)로 나눈다.
 
 트랙 B 입력(`input-b.md`)에서는 프로필·기각 이유 중 트랙 A 라벨·내용을 언급한 문장을 일반화하거나 뺀다(예: "A1이랑 겹침" → "다른 후보와 중복"). 트랙 파일에는 퇴비 후보의 내용 없이 건수만 남긴다.
@@ -105,8 +105,8 @@
 - `no-revenue` → 대상 고객·가격·채널을 바꾼다.
 - `abandoned` → 동기를 확인한다. 동기가 없으면 부품만 넘기고 원 결과물은 보내 준다.
 
-### 6. 방향 제시 (`steps/06-direction.md`)
-- 출력은 `templates/direction.md`. 두 트랙을 **나란히** 보여 준다: "현재 아이디어대로라면 이렇게 / 새 아이디어대로라면 이렇게".
+### 6. 방향 제시 (`references/steps/06-direction.md`)
+- 출력은 `assets/templates/direction.md`. 두 트랙을 **나란히** 보여 준다: "현재 아이디어대로라면 이렇게 / 새 아이디어대로라면 이렇게".
 - 트랙당 후보 1–3개. 후보마다:
   - 한 줄 정의, 쓰는 부품(출처 결과물), 근거 교훈
   - **첫 실험**(7일 안에 끝나는 크기) + **성공 기준**(숫자)
@@ -116,12 +116,12 @@
 - 끝에 퇴비 요약 한 줄만: "퇴비로 보낸 것 N건 (규칙별 건수)". 내용은 사용자가 원할 때만 보여 준다.
 - 출력은 장부의 `runs/<날짜>.md` 에도 저장한다.
 
-### 7. 판단 (`steps/07-judge.md`)
+### 7. 판단 (`references/steps/07-judge.md`)
 - 후보마다 `adopt`(채택) / `hold`(보류) / `reject`(기각) + 이유 한 줄. 이유는 비워도 되지만 권한다.
 - **일괄 입력**: 후보마다 묻지 않고 번호를 붙여 한 줄로 받는다. 예) `A1 adopt 이유..., A2 hold, B1 reject 운영부담` 또는 `A1 a, B2 r`. 빠진 후보·빈 답은 `hold`. 질문 피로를 줄이는 게 목적.
 - 트랙을 고르라고 하지 않는다. 장부에는 후보의 트랙 꼬리표가 자동으로 붙는다.
 
-### 8. 기록 (`steps/08-ledger.md`)
+### 8. 기록 (`references/steps/08-ledger.md`)
 - `decisions.jsonl` 에 판단을 덧붙인다.
 - `profile.md`(개인 프로필) 갱신: 취향(무엇을 채택·기각하나), 실행 패턴(채택 대비 착수율), 반복 교훈, 활성 의도. **근거 결정 id 인용 필수.**
 - 시스템 개선 제안: 근거가 쌓였을 때만 `proposals.md` 에 덧붙인다(예: "트랙 B 후보 기각 사유 4건 중 3건이 '운영 부담' → 트랙 B에 운영비 추정 필수화"). 사용자가 승인한 것만 반영한다. 반영은 스킬 폴더를 고치지 않고 장부의 `overrides.md` 에 덧붙인다(대상 파일·규칙 id, 바뀐 지시, 근거 proposal id, 승인일). `proposals.md` 에는 `applied-to: overrides.md` 를 기록한다.
@@ -148,7 +148,7 @@
 - 변경된 결과물(changed): `git-head` 는 `git diff --stat <old>..HEAD` 범위만, `git-ref` 는 `git diff --stat <old tree> <new tree>` 범위만, `file-hash`·`url-modified`·`notion-edited`·`text-hash` 는 그 결과물만 전체 재분석.
 - 결과물 지문(`method`): `git-head`(git 폴더·GitHub URL), `git-ref`, `file-hash`(git 아닌 폴더, 필터 적용), `notion-edited`, `url-modified`, `text-hash`.
 
-## 외부 정보 — 출처 목록 (`sources/defaults.md`, `sources/README.md`)
+## 외부 정보 — 출처 목록 (`assets/default-sources.md`, `references/sources.md`)
 
 트랙 B만 쓴다. 기본 목록은 스킬에 동봉하고, 첫 실행(또는 파일이 없을 때) 장부의 `<LEDGER>/sources.md` 로 복사한다(파일이 있으면 덮어쓰지 않음). 이후에는 **사용자 목록이 기준**이다. 플러그인 업데이트로 기본값에 새 항목이 생기면 "새 기본 출처 N개 — 추가할까요?" 한 줄로만 제안한다.
 
@@ -170,7 +170,7 @@
 - 한국 도메인은 WebSearch 결과가 빈약할 수 있으니 fetch 타입 URL(RSS 등)을 우선한다.
 - 성공 사례만 넣으면 생존자 편향이 커진다 → 후보마다 `failure` 범주 출처를 최소 1개 쓴다.
 - **`local` 타입**: 폴더 경로 또는 git 참조 `<repo>@<branch>:<path>`. `git fetch` 는 하지 않고 이미 있는 ref 를 `git show` / `ls-tree` 로 읽는다(오래됐으면 fetch 명령만 안내). JSON 항목 최소 필드 `title`, `summary`, `source_url`, `date`. 마크다운도 허용. 자기 수집기는 이걸로 붙인다.
-- **CRUD**: `/slop-compost sources list|add|remove|edit|enable|disable [id]`. add 는 한 줄 대화로 type/how/category 를 받는다. remove 는 지우지 않고 `removed: <날짜>` 표시.
+- **CRUD**: `/slop-compost:sources list|add|remove|edit|enable|disable [id]` (별도 스킬, 스크립트 `ledger.py sources` 호출). add 는 한 줄 대화로 type/how/category 를 받는다. remove 는 지우지 않고 `removed: <날짜>` 표시.
 - **퇴비 재료**: 트랙 B 는 퇴비 중 "근거만 부족했던" 후보(`failed_rules` 가 근거 규칙 `.ev-` 뿐인 것)를 재료로 다시 볼 수 있다. 다시 쓰면 빠졌던 근거를 반드시 채우고, `reused_in` 에 run id 를 기록한다.
 
 ## 장부 (기본 `~/.slop-compost/`, `SLOP_COMPOST_HOME` 으로 변경)
@@ -203,18 +203,27 @@
 ```
 slop-compost/
 ├── .claude-plugin/{marketplace.json, plugin.json}
-├── skills/slop-compost/
-│   ├── SKILL.md                # 오케스트레이터: 단계 순서, 공통 규칙, 트랙 병렬 실행, 장부 경로
-│   ├── steps/00-recall.md … 08-ledger.md (05a, 05b 포함)
-│   ├── rubrics/{code,writing,idea}.md
-│   ├── sources/{README.md, defaults.md}
-│   └── templates/{artifact,lesson,direction,profile,export}.md
-├── docs/DESIGN.md
+├── skills/
+│   ├── compost/                 # /slop-compost:compost — 파이프라인 오케스트레이터
+│   │   ├── SKILL.md             # 단계 순서, 공통 규칙, 트랙 병렬 실행 (짧게)
+│   │   ├── scripts/ledger.py    # 결정론적 작업 전부 (Python 3.9+, 표준 라이브러리만, 네트워크 없음)
+│   │   ├── references/          # 필요할 때만 읽는 문서
+│   │   │   ├── steps/00-recall.md … 08-ledger.md (05a, 05b 포함)
+│   │   │   ├── rubrics/{code,writing,idea}.md
+│   │   │   ├── sources.md       # 출처 사용 규칙
+│   │   │   └── schemas.md       # 장부 구조·레코드 스키마
+│   │   └── assets/              # 출력에 쓰는 파일
+│   │       ├── templates/{artifact,lesson,direction,profile,intents,export}.md
+│   │       └── default-sources.md
+│   └── sources/SKILL.md         # /slop-compost:sources — ../compost/scripts/ledger.py 호출
+├── tests/test_ledger.py         # unittest + v0.1.1 장부 픽스처
+├── .github/workflows/test.yml   # Python 3.9 / 3.12
+├── docs/DESIGN.md, CHANGELOG.md
 ├── README.md, README.ko.md, LICENSE
 ```
 
-- 오케스트레이터는 각 단계 파일을 **그 단계에 들어갈 때만** 읽는다(컨텍스트 절약). 경로는 `${CLAUDE_SKILL_DIR}` 기준(수동 설치·플러그인 설치 모두 동작).
-- 트랙 A·B는 서브에이전트로 띄우고, 각 트랙 파일을 브리프로 넘긴다.
+- 오케스트레이터는 각 단계 파일을 **그 단계에 들어갈 때만** 읽는다(컨텍스트 절약). 경로는 `${CLAUDE_SKILL_DIR}` 기준(수동 설치·플러그인 설치 모두 동작). `${CLAUDE_SKILL_DIR}` 는 SKILL.md 본문과 `allowed-tools` 에서만 치환되므로 references 는 `<CLI>`, `<SKILL_DIR>` 자리표시자를 쓴다.
+- 트랙 A·B는 서브에이전트로 띄우고, 브리프에는 references 절대경로와 입력 파일 경로만 넘긴다.
 - 모든 step 파일은 `Inputs / Do / Output / Reject if` 섹션을 가진다. "Reject if" 항목은 규칙 id(`03.ev-no-location` 등)를 가지며, `.ev-` 가 들어간 id 는 근거 규칙이다.
 
 ## v1 범위
@@ -268,3 +277,17 @@ slop-compost/
 - **"지우지 않는다"의 유일한 예외**: 실행 끝에 저장소 클론(`runs/<id>.work/src/`)과 DB 복사본을 삭제(사용자 데이터 복제 방지).
 - `sources` 하위 명령 보강(id 자동 생성, enum 검증, edit 따옴표, id 변경 금지, 사용법 출력, 통계 없으면 `-`, 복원 시 `restored` 기록). `defaults.md` 의 `## ` 헤딩 = 출처 하나.
 - 번역 금지 표지: `Source ids:`, `[src:...]`, `Convergence:`. 템플릿에 `templates/intents.md`, lesson `Related:` 추가.
+
+## v0.4 변경점 (2026-10-15, 플러그인 v0.2.0 — 구조·토큰 개편)
+
+동작·규칙·장부 형식은 그대로다. v0.1.1 장부를 그대로 읽는다.
+
+- **스킬 분리**: 메인 스킬 `compost`(`/slop-compost:compost`), 출처 관리 `sources`(`/slop-compost:sources`). 수동 설치는 `skills/compost`, `skills/sources` 두 폴더를 `~/.claude/skills/` 에 나란히 링크(→ `/compost`, `/sources`). `sources` 는 형제 폴더의 스크립트를 쓴다.
+- **표준 구조**: `scripts/`(실행 코드), `references/`(필요할 때 읽는 문서), `assets/`(출력에 쓰는 파일). 스키마는 `references/schemas.md` 로 분리.
+- **토큰 절감**: 결정론적 작업은 전부 `scripts/ledger.py` 로 옮겼다. LLM 은 읽기·판단·글쓰기만 한다. 스크립트는 짧은 JSON 한 줄만 출력해 LLM 이 장부 원본을 통째로 읽지 않게 한다.
+  - `init`(run id·모드 힌트·출처 시드), `fingerprint`(지문·상태·id 재사용, URL 류는 `needs_llm` 후 `--set`), `select-files`(핵심 파일 50개 순위), `recall`/`apply-recall`(후속 확인 목록·관대한 파싱·skip/stale), `bundle a|b`(트랙 입력, B 는 트랙 A 흔적 일반화·재사용 퇴비 필터), `lint`(구조적 Reject-if, `--compost` 로 퇴비 기록), `judge`(판단 한 줄 파싱), `commit`(8단계 기계 작업·스키마 검사·state·source_stats·핫스팟/idle 후보·클론 삭제), `validate`(스키마·id 참조 무결성), `sources`(CRUD + `sync-defaults`).
+  - 의미 판단(반증 가능성, 한 문장 한 주장, 반대 증거의 구체성, 재구성 여부 등)은 LLM 몫으로 남기고 각 references 의 "Reject if" 에 구조 검사(`*`)와 구분해 적었다.
+  - 트랙 서브에이전트는 `SLOP_COMPOST_TRACK_MODEL`(기본 `sonnet`)로 띄운다.
+  - `allowed-tools: Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/ledger.py *)` 로 스크립트 호출 권한 프롬프트를 줄인다(공식 문서상 스킬을 호출한 턴에만 적용되고 사용자의 다음 메시지에서 해제된다).
+- **폴더 지문 `method_version: 3`**: 필터에 `vendor/`, `third_party/`, `generated/`, 압축 파일(`*.min.js`, `*.min.css`), DB 파일을 더했다. 이전 버전 지문은 한 번 재계산하고 `unchanged` 로 본다(기존 마이그레이션 규칙).
+- **테스트·CI**: `tests/test_ledger.py`(임시 장부, v0.1.1 장부 픽스처), GitHub Actions(Python 3.9 / 3.12).

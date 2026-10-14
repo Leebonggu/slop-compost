@@ -1,0 +1,2 @@
+{"id":"C-2026-10-01-b1","run":"2026-10-01","step":"05b","kind":"candidate","content":"B2: Slack bot that summarizes feeds","failed_rules":["05b.ev-no-counter"],"at":"2026-10-01T21:06:00+09:00","reused_in":[]}
+{"id":"C-2026-10-01-1","run":"2026-10-01","step":"03","kind":"lesson","content":"UX needs work","failed_rules":["03.unfalsifiable"],"at":"2026-10-01T21:05:00+09:00","reused_in":[]}

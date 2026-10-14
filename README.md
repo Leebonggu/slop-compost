@@ -35,6 +35,8 @@ The author rejected the budget-app proposal: “B2C doesn’t fit my intent.” 
 
 ## Get started
 
+Requires Python 3.9+. The script uses only the standard library and makes no network requests.
+
 Install inside Claude Code:
 
 ```text
@@ -45,7 +47,7 @@ Install inside Claude Code:
 Then hand it something unfinished. A GitHub URL or a quoted one-line idea works in place of a folder.
 
 ```text
-/slop-compost:slop-compost ~/playground/my-project
+/slop-compost:compost ~/playground/my-project
 ```
 
 You can also ask naturally: “What can I salvage from this abandoned project? ~/playground/my-project”
@@ -66,6 +68,13 @@ flowchart LR
 - **Consider both directions independently.** Revival (Track A) and new ideas (Track B) do not see each other’s answers. Sometimes the revival answer is to let a project go and keep its parts.
 - **Remember your choices.** Adopts, holds, rejections, and follow-up results stay in `~/.slop-compost` on your machine and inform later runs.
 
+## How it saves tokens
+
+- A small Python script handles fingerprints, file selection, ledger reads and writes, rule linting, judgment parsing, and source management. It returns one compact JSON line, so the model gets results without loading the raw ledger in full.
+- Step guides, rubrics, and schemas live in `references/` and are read only when needed in the relevant step.
+- The two track subagents use Sonnet by default. Change this with `SLOP_COMPOST_TRACK_MODEL`.
+- The script pre-selects at most 50 key files per project for the model to read.
+
 ## Rules for useful output
 
 | Output | Required |
@@ -85,7 +94,7 @@ The first answer can anchor the next one. Separate input bundles and two indepen
 
 Success stories leave out the attempts that failed, so new ideas need failure research too. A weekly experiment and a number make “validate the market” specific enough to act on. Lessons must also say what could prove them wrong.
 
-Instruction changes are explicit. Five or more failures of the same rule across at least three runs trigger an improvement proposal. Approved changes live in local `overrides.md`, so plugin updates do not erase them. See the [design document](docs/DESIGN.md) (Korean) and [skill instructions](skills/slop-compost/SKILL.md).
+Instruction changes are explicit. Five or more failures of the same rule across at least three runs trigger an improvement proposal. Approved changes live in local `overrides.md`, so plugin updates do not erase them. See the [design document](docs/DESIGN.md) (Korean) and [skill instructions](skills/compost/SKILL.md). See the [changelog](CHANGELOG.md) for version history.
 
 </details>
 
@@ -105,26 +114,37 @@ Nine default sources feed the new-idea direction. On the first run they are copi
 | `disquiet` | Korean makers’ products and build logs |
 | `exploding-topics` | Topics gaining search interest |
 
-The default list excludes Product Hunt, Reddit, and Indie Hackers because of automated-access restrictions. Paid or subscription-gated content is excluded too. See the [source access rules](skills/slop-compost/sources/defaults.md).
+The default list excludes Product Hunt, Reddit, and Indie Hackers because of automated-access restrictions. Paid or subscription-gated content is excluded too. See the [source access rules](skills/compost/assets/default-sources.md).
+
+Source management has its own skill:
 
 ```text
-/slop-compost:slop-compost sources list
-/slop-compost:slop-compost sources add my-notes
-# Answer the prompt: local, ~/my-notes, trend
-/slop-compost:slop-compost sources disable trustmrr
-/slop-compost:slop-compost sources remove disquiet
+/slop-compost:sources list | add [id] | remove <id> | edit <id> | enable <id> | disable <id>
 ```
 
-Add your own material as a `local` source: a folder or a git reference such as `~/my-scraper@data:items`. It reads existing refs without running `git fetch`. Scraper output in JSON needs `title`, `summary`, `source_url`, and `date`; Markdown works too. See [source management](skills/slop-compost/sources/README.md).
+```text
+/slop-compost:sources list
+/slop-compost:sources add my-notes
+# Answer the prompt: local, ~/my-notes, trend
+/slop-compost:sources disable trustmrr
+/slop-compost:sources remove disquiet
+```
+
+Add your own material as a `local` source: a folder or a git reference such as `~/my-scraper@data:items`. It reads existing refs without running `git fetch`. Scraper output in JSON needs `title`, `summary`, `source_url`, and `date`; Markdown works too. See [source management](skills/compost/references/sources.md).
 
 ## Before you run it
 
-- **Budget for a substantial run.** The author measured roughly **430k tokens across two runs**, about **8 minutes per run**. Your inputs will change that. Each project is capped at 50 core files.
+- **Cost depends on your inputs.** On v0.1, the author measured roughly **430k tokens across two runs**, about **8 minutes per run**.
 - **Small additions get a lighter pass.** In an incremental run with just one new idea or draft, lightweight mode uses one external source per category (failure sources are always kept). Use `--full` to force a full re-analysis.
 - **Run two has more to work with.** You get parts and patterns on the first run; remembering choices and checking what happened needs history.
 - **Weak sources mean weak proposals.** Thin or stale results cannot establish demand. The AI can also misread a cited line, so check the references.
 - **Search queries leave your machine.** Records are stored locally, but web queries use words drawn from your parts and lessons. Those project descriptions reach the search service.
-- **This is v0.1.** The measurements above come from the author’s two runs, not a quality benchmark across a wide range of projects.
+- **This is still v0.2.** A few runs by the author cannot establish quality across a wide range of projects.
+
+Measured on one v0.2.0 run:
+
+- About **4 minutes** and roughly **US$2** at API list prices (Opus for the main run, Sonnet for the tracks). Input: one 109-file project, 50 key files read.
+- It was measured differently from v0.1, so no percent-saving claim.
 
 ## FAQ
 
@@ -144,19 +164,22 @@ claude plugin marketplace add Leebonggu/slop-compost
 claude plugin install slop-compost@slop-compost-marketplace --scope user
 ```
 
-Or install just the skill:
+Or install the two skills manually:
 
 ```bash
 git clone https://github.com/Leebonggu/slop-compost.git
 mkdir -p ~/.claude/skills
-cp -R slop-compost/skills/slop-compost ~/.claude/skills/
+cp -R slop-compost/skills/compost slop-compost/skills/sources ~/.claude/skills/
 ```
 
-For a manual install, invoke `/slop-compost ~/playground/my-project`. Source commands use the same shorter prefix: `/slop-compost sources list`.
+You can symlink both folders instead of copying them. Keep `compost` and `sources` as siblings under `~/.claude/skills/`: `sources` uses `../compost/scripts/ledger.py`.
+
+For a manual install, invoke `/compost ~/playground/my-project` or `/sources list` for source management.
 
 | Variable | Default | Purpose |
 |---|---|---|
 | `SLOP_COMPOST_HOME` | `~/.slop-compost` | Record storage location |
+| `SLOP_COMPOST_TRACK_MODEL` | `sonnet` | Model for the two track subagents |
 | `SLOP_COMPOST_LANG` | Auto-detect | Force output language: `ko` or `en` |
 | `SLOP_COMPOST_FULL_EVERY` | `10` | After this many new artifacts, re-read every recorded project and recompute patterns and lessons |
 
@@ -223,7 +246,7 @@ Judgments: A1 adopt, A2 reject "B2C doesn't fit my intent", A3 hold, B1 adopt "m
 **Run 2 — same day, one more idea**
 
 ```text
-> /slop-compost "A tool that auto-writes blog posts with AI and posts them to Naver. Quit over post quality."
+> /slop-compost:compost "A tool that auto-writes blog posts with AI and posts them to Naver. Quit over post quality."
 
 Mode: incremental (1 new artifact; the 4 in the ledger are not re-analyzed)
 

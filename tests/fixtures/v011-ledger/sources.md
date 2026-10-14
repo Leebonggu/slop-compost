@@ -1,6 +1,6 @@
 # Default sources
 
-Shipped with the skill. On the first run (or whenever `<LEDGER>/sources.md` is missing) this file is copied to `<LEDGER>/sources.md`, and from then on **the user's copy is the list that counts**. Rules for using sources: [README.md](README.md).
+Shipped with the skill. On the first run (or whenever `<LEDGER>/sources.md` is missing) this file is copied to `<LEDGER>/sources.md`, and from then on **the user's copy is the list that counts**. Rules for using sources: `README.md`.
 
 Entry fields:
 

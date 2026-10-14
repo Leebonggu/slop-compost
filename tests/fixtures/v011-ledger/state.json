@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "last_full_analysis": "2026-10-01",
+  "artifacts_since_full": 1,
+  "runs": ["2026-10-01", "2026-10-08"],
+  "fingerprints": {
+    "idea-factory": {"source": "~/playground/idea-factory", "method": "file-hash", "method_version": 2, "value": "777cab6e3903", "at": "2026-10-01T21:00:00+09:00"},
+    "old-notes": {"source": "~/playground/old-notes", "method": "file-hash", "value": "aaaabbbbcccc", "at": "2026-10-01T21:00:00+09:00"},
+    "podcast-idea": {"source": "text", "method": "text-hash", "value": "4b5e1e1d1b0e3f4e3c0d0a7f4a1b9c2d3e4f5a6b  -", "at": "2026-10-08T21:00:00+09:00"}
+  },
+  "source_stats": {
+    "failory": {"runs_used": ["2026-10-01"], "cited": 1, "cited_in_adopted": 0, "last_cited_run": "2026-10-01",
+                "per_run": {"2026-10-01": {"enabled": true, "cited": 1, "cited_in_adopted": 0},
+                            "2026-10-08": {"enabled": true, "cited": 0, "cited_in_adopted": 0}}}
+  }
+}
