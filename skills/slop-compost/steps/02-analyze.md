@@ -7,7 +7,7 @@ Then across artifacts: recurring themes and recurring behaviors.
 
 - Intake table and `mode` from step 1.
 - The rubric for each type present: [../rubrics/code.md](../rubrics/code.md), [../rubrics/writing.md](../rubrics/writing.md), [../rubrics/idea.md](../rubrics/idea.md). Read only the ones you need.
-- Existing ledger cards (`$LEDGER/artifacts/<id>.md`) and `parts.jsonl` for `unchanged`/`changed` artifacts.
+- Existing ledger cards (`<LEDGER>/artifacts/<id>.md`) and `parts.jsonl` for `unchanged`/`changed` artifacts.
 - Recall summary from step 0.
 - Card format: [../templates/artifact.md](../templates/artifact.md).
 
@@ -16,13 +16,16 @@ Then across artifacts: recurring themes and recurring behaviors.
 1. **Pick files (cost guard).** Per artifact, at most **50 core files**, chosen in this order until the cap:
    1. entry points (`main.*`, `index.*`, `app.*`, `cmd/`, `src/` roots, `package.json` `main`/`bin`, `pyproject` scripts),
    2. README / docs top level,
-   3. config and manifests (`package.json`, `pyproject.toml`, `Dockerfile`, `.env.example`, CI files),
+   3. config and manifests (`package.json`, `pyproject.toml`, `Dockerfile`, CI files; never `.env*` or other secret-bearing files),
    4. most recently changed files (`git -C <path> log --name-only --pretty=format: -n 30 | awk 'NF' | awk '!seen[$0]++'`).
    Use the **file filter** from step 1 (same excluded directories and files); also skip vendored, generated, and binary files. Never open a database in place (see SKILL.md "Read-only on inputs"). If the cap was hit, mark the artifact `partial: true` and say how many files exist in total.
-   For `changed` artifacts in incremental mode, read the changed files first, then fill up to the cap.
+   For `changed` artifacts in incremental mode, follow the step 1 table (diff range only for `git-head`/`git-ref`, whole artifact otherwise).
+   **Full mode**: also read every card in `<LEDGER>/artifacts/` (not their sources) so patterns and lessons are recomputed across the whole ledger.
+   **Secrets**: if a key, token, or password value appears in a file you read, do not quote it anywhere (cards, parts, lessons, queries). Refer to it as `<redacted secret at path:line>` at most.
 2. **Summarize** each artifact with the rubric: goal (one sentence), how far it got (completeness 0-100% with the rubric's checkpoints), last activity date.
 3. **Extract parts** (reusable pieces). Each part: `kind` (`module` | `sentence` | `problem` | `data` | `design` | `other`), `location` (`path:line-line`, paragraph number, or note line), one-line description, and why it is reusable. Aim for 2-6 strong parts per artifact; quality over count.
-   In incremental mode, compare with `parts.jsonl` and mark each part `new` or `known`.
+   Compare with `<LEDGER>/parts.jsonl` (if it exists) and mark each part `new` or `known` (same artifact and same location/description).
+   Write every **new** part as one line to `<LEDGER>/runs/<run-id>.work/parts.pending.jsonl`, using the `parts.jsonl` schema in [08-ledger.md](08-ledger.md) exactly. `id` = `<artifact-id>#p<n>` where `n` = (highest existing `n` for that artifact in `parts.jsonl` and this file) + 1. Do not write `known` parts.
 4. **Propose stop reasons** from the evidence, then confirm with **one batched question** for all artifacts:
 
    ```
@@ -39,7 +42,7 @@ Then across artifacts: recurring themes and recurring behaviors.
    - Recurring themes: the same problem, user, or data touched by 2+ artifacts. These raise revival priority. Cite artifact ids.
    - Recurring behaviors: patterns of how the user builds, e.g. "7 features before any user test", "backend before landing page". Cite locations in at least 2 artifacts.
 6. **Parts list for the first run.** Even when the ledger is empty, produce the full parts table and the cross-artifact patterns. Step 6 must show them.
-7. Write a draft card per artifact (new or changed) to `$LEDGER/runs/<run-id>.work/artifacts/<id>.md` using the template. Step 8 moves them into `artifacts/`.
+7. Write a draft card per artifact (new or changed) to `<LEDGER>/runs/<run-id>.work/artifacts/<id>.md` using the template. Step 8 moves them into `artifacts/`.
 
 ## Output
 
@@ -54,6 +57,7 @@ Compost (see SKILL.md) each failing item with `kind: part` or `kind: pattern`; d
 - [`02.ev-no-location`] A part has no concrete location (file:line, paragraph, or note line).
 - [`02.generic-part`] A part's "why reusable" is generic ("clean code", "good idea") instead of naming what it saves or enables.
 - [`02.ev-single-artifact-pattern`] A cross-artifact theme or behavior cites fewer than 2 artifacts.
+- [`02.secret-quoted`] A key, token, or password value was quoted, stored, or used in a query.
 - [`02.opened-db-in-place`] A database file was opened in place instead of a copy or `?immutable=1`.
 - [`02.uncapped`] More than 50 files read for one artifact, or the cap was hit without `partial: true`.
 - [`02.reason-not-confirmed`] Stop reasons were written without showing the batched confirmation question.

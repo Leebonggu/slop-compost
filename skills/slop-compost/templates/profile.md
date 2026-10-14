@@ -1,4 +1,4 @@
-# Template - profile (`$LEDGER/profile.md`)
+# Template - profile (`<LEDGER>/profile.md`)
 
 Rewritten each run; the previous "Current" moves under "History" with its date. Every bullet cites ids.
 

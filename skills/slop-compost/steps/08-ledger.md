@@ -4,14 +4,14 @@ Write everything staged during the run into the ledger, update the personal prof
 
 ## Inputs
 
-- Everything in `$LEDGER/runs/<run-id>.work/`: `recall.json`, `intake.md`, `artifacts/*.md`, `parts.pending.jsonl`, `lessons.md`, `intents.md`, `compost*.jsonl`, `track-a.md`, `track-b.md`.
+- Everything in `<LEDGER>/runs/<run-id>.work/`: `recall.json`, `intake.md`, `artifacts/*.md`, `parts.pending.jsonl`, `lessons.md`, `intents.md`, `compost*.jsonl`, `track-a.md`, `track-b.md`.
 - Judgments from step 7. Run file `runs/<run-id>.md` from step 6.
 - Templates: [../templates/artifact.md](../templates/artifact.md), [../templates/lesson.md](../templates/lesson.md), [../templates/profile.md](../templates/profile.md), [../templates/export.md](../templates/export.md).
 
 ## Ledger layout
 
 ```
-$LEDGER/                      # SLOP_COMPOST_HOME, default ~/.slop-compost
+<LEDGER>/                      # SLOP_COMPOST_HOME, default ~/.slop-compost
 ├── artifacts/<id>.md         # artifact card (templates/artifact.md)
 ├── parts.jsonl               # parts index
 ├── lessons.md                # lessons, dated sections, repeat counts (templates/lesson.md)
@@ -102,27 +102,30 @@ In-place update allowed: `reused_in` (append a run id).
   "artifacts_since_full": 0,
   "runs": ["2026-10-15"],
   "fingerprints": {
-    "idea-factory": {"source": "~/playground/idea-factory", "method": "file-hash", "value": "777cab6e3903", "at": "2026-10-15T21:00:00+09:00"}
+    "idea-factory": {"source": "~/playground/idea-factory", "method": "file-hash", "method_version": 2, "value": "777cab6e3903", "at": "2026-10-15T21:00:00+09:00"}
   },
   "source_stats": {
-    "failory": {"runs_used": ["2026-10-15", "2026-10-15-2"], "cited": 3, "cited_in_adopted": 1, "last_cited_run": "2026-10-15-2"}
+    "failory": {"runs_used": ["2026-10-15", "2026-10-15-2"], "cited": 3, "cited_in_adopted": 1, "last_cited_run": "2026-10-15-2",
+                "per_run": {"2026-10-15": {"enabled": true, "cited": 2, "cited_in_adopted": 1},
+                            "2026-10-15-2": {"enabled": true, "cited": 1, "cited_in_adopted": 0}}}
   }
 }
 ```
-`method`: `git-head` | `git-ref` | `file-hash` | `mtime` | `content-hash`. `last_full_analysis` is `null` until the first full run (the first run is always full, so it is set at the end of run 1).
-`source_stats.<id>`: `runs_used` (run ids where Track B used the source), `cited` (evidence lines citing it, all candidates shown), `cited_in_adopted` (citations in candidates the user adopted), `last_cited_run`.
+`method`: `git-head` | `git-ref` | `file-hash` | `notion-edited` | `url-modified` | `text-hash` (see the step 1 table). `method_version` (integer, optional): `2` for `file-hash` fingerprints computed from inside the folder over relative paths; a `file-hash` without it is recomputed once (step 1 migration). The existence of `state.json` is what marks "not the first run"; it is written at the end of run 1, which is always full, so `last_full_analysis` is set from run 1 on.
+`source_stats.<id>`: `runs_used` (run ids where Track B used the source), `cited` (evidence lines citing it, all candidates shown), `cited_in_adopted` (citations in candidates the user adopted), `last_cited_run`, and `per_run` (`{<run-id>: {enabled: bool, cited: int, cited_in_adopted: int}}`, one entry for every run, including runs where the source was enabled but not used).
 
 ## Do
 
-1. `mkdir -p "$LEDGER/artifacts" "$LEDGER/runs" "$LEDGER/export"`.
+1. `mkdir -p <LEDGER>/artifacts <LEDGER>/runs <LEDGER>/export`.
 2. **Artifacts**: move draft cards into `artifacts/<id>.md`. For an existing card, append a dated "Update" section; do not rewrite history.
-3. **Parts**: append `parts.pending.jsonl` lines (new parts only) to `parts.jsonl`.
+3. **Parts**: append the lines of `runs/<run-id>.work/parts.pending.jsonl` to `parts.jsonl` (step 2 writes only new parts there, already in the final schema).
 4. **Lessons**: append a `## <YYYY-MM-DD> (run <run-id>)` section to `lessons.md` (template). For repeated lessons, add the new evidence under the same id and update its `repeat` line; mark structural habits.
-5. **Intents**: apply staged changes to `intents.md` (move ended ones to "Ended" with date; never delete).
-6. **Decisions**: append one line per judged candidate (schema above). Then apply `recall.json` updates (followups, skip_count, stale) by rewriting `decisions.jsonl` with every line kept.
-7. **Compost**: merge `compost.pending.jsonl`, `compost.track-a.jsonl`, `compost.track-b.jsonl`; assign ids `C-<run-id>-<n>`, `run`, `at`, `reused_in: []`; append to `compost.jsonl`. For each adopted-or-shown Track B candidate with `reused_compost`, append this run id to that entry's `reused_in`.
+5. **Intents**: apply staged changes to `intents.md` ([../templates/intents.md](../templates/intents.md); move ended ones to "Ended" with date; never delete).
+6. **Decisions**: append one line per judged candidate (schema above), taking candidate text, labels, `Source ids:` and `reused_compost` from `runs/<run-id>.md` (the reference document, not the track files). Then apply `recall.json` updates (followups, skip_count, stale) by rewriting `decisions.jsonl` with every line kept.
+7. **Compost**: merge `compost.pending.jsonl`, `compost.track-a.jsonl`, `compost.track-b.jsonl` (each line already has `id`, `run`, `step`, `kind`, `content`, `failed_rules`, `at`; fill any missing field), add `reused_in: []`, append to `compost.jsonl`. For each Track B candidate in `runs/<run-id>.md` with `reused_compost`, append this run id to that entry's `reused_in`.
 8. **State**: update fingerprints for analyzed artifacts. If `mode == full` (always true on the first run): `last_full_analysis = today`, `artifacts_since_full = 0`. Else: `artifacts_since_full += number of new artifacts`. Append the run id to `runs`.
-   **Source stats**: read the `[src:<id>]` tags and `Source ids:` lines in `track-b.md`, join with this run's judgments, and update `state.json.source_stats` (add the run id to `runs_used` for every source used, add citation counts, add `cited_in_adopted` for adopted candidates).
+   **Source stats**: read the `[src:<id>]` tags and `Source ids:` lines in `runs/<run-id>.md`, join with this run's judgments, and update `state.json.source_stats`: add the run id to `runs_used` for every source used, add citation counts, add `cited_in_adopted` for adopted candidates, and write `per_run.<run-id>` = `{enabled, cited, cited_in_adopted}` for **every** source in `<LEDGER>/sources.md` (0 when unused).
+   Write `state.json` (fingerprints, counters, source stats) as the last file of this step: its existence marks the ledger as initialized, so an interrupted first run stays a first run.
 9. **Profile** (`profile.md`, template): rewrite the current section, keep previous ones under "History". Every statement cites decision ids, lesson ids, or followups:
    - taste: what gets adopted vs rejected (by track, by kind of candidate),
    - execution: adopted vs started vs done (from followups),
@@ -132,13 +135,13 @@ In-place update allowed: `reused_in` (append a run id).
     - Judgment pattern: 3+ rejections in 2+ runs sharing a reason theme (e.g. "B candidates rejected for operating burden: `2026-10-01:B2`, `2026-10-15:B1`, `2026-10-15:B3` -> require an operating-cost estimate in 05b").
     - Track statistics: one track's adopt-to-start rate is 0 across 5+ adopts.
     - **Compost hot spot**: the same rule id appears in compost entries from **3 or more runs** with **5 or more entries** total -> propose changing that step's instruction or the rubric behind it, citing the compost ids.
-    - **Idle source**: a source enabled during the last 5 runs (in `runs_used`) with `cited_in_adopted` unchanged at 0 over those runs -> propose "Disable `<id>`?" citing the run ids. Approval sets `enabled: false` in `$LEDGER/sources.md` (not deleted) and records `applied-to: sources.md`.
+    - **Idle source**: over the 5 most recent run ids in `state.json.runs`, the source's `per_run` shows `enabled: true` in all 5 and `cited_in_adopted: 0` in all 5 -> propose "Disable `<id>`?" citing those run ids. Approval sets `enabled: false` in `<LEDGER>/sources.md` (not deleted) and records `applied-to: sources.md`.
     Format: `## P<n> - <title>` with `status: pending`, `evidence:` (ids), `change:` (file, section, exact edit), `why:`.
     Then ask once: "New system proposals: P3, P4. Approve? (P3 yes, P4 no | skip)".
-    - `yes` -> append an override to `$LEDGER/overrides.md` (format below) and set the proposal to `status: approved <date>` plus `applied-to: overrides.md`.
+    - `yes` -> append an override to `<LEDGER>/overrides.md` (format below) and set the proposal to `status: approved <date>` plus `applied-to: overrides.md`.
     - `no` -> `status: declined <date>`. `skip` -> stays `pending`.
-    - **Never edit files under `${CLAUDE_SKILL_DIR}`.** Overrides live in the ledger, so plugin updates do not erase them and the skill files stay identical for everyone.
-11. **Overrides format** (`$LEDGER/overrides.md`, append only; a later override for the same target and rule supersedes an earlier one, which stays in the file marked `superseded by O<n>`):
+    - **Never edit files under `<SKILL_DIR>`.** Overrides live in the ledger, so plugin updates do not erase them and the skill files stay identical for everyone.
+11. **Overrides format** (`<LEDGER>/overrides.md`, append only; a later override for the same target and rule supersedes an earlier one, which stays in the file marked `superseded by O<n>`):
 
     ```markdown
     ## O1 - steps/05b-track-new.md - 05b.ev-no-counter
@@ -148,8 +151,9 @@ In-place update allowed: `reused_in` (append a run id).
     - Approved: 2026-10-15
     ```
 12. **Upstream export of overrides (only on request).** If the user wants to send an override back to the skill's repository, write `export/overrides-<YYYY-MM-DD>.md`: for each chosen override, the repository path (`skills/slop-compost/<target>`), the rule id, a suggested unified diff against the current file text, and a reason stated with counts only (e.g. "rule failed 6 times across 4 runs"). Strip personal data, project names, compost content, and ledger ids. The user opens the PR themselves; this skill never pushes or opens PRs.
-13. **Export**: v1 does not send anything. Only if the user asks for an export, write `export/<run-id>.md` with [../templates/export.md](../templates/export.md), stripping personal data and source code.
-14. Finish with a 3-line summary: ledger path, run file path, counts (adopt / hold / reject, composted).
+13. **Export**: v1 does not send anything (the only thing that ever leaves the machine is short Track B search keywords, never file contents, secrets, or personal data). Only if the user asks for an export, write `export/<run-id>.md` with [../templates/export.md](../templates/export.md), stripping personal data and source code.
+14. **Clean up copies** (the one explicit exception to "never delete"): remove `<LEDGER>/runs/<run-id>.work/src/` (repository clones) and any database copies made in the work directory, so the ledger does not hold a duplicate of the user's code or data. Everything else in the work directory stays.
+15. Finish with a 3-line summary: ledger path, run file path, counts (adopt / hold / reject, composted).
 
 ## Output
 
@@ -158,10 +162,10 @@ In-place update allowed: `reused_in` (append a run id).
 
 ## Reject if
 
-- [`08.deleted-line`] Any existing JSONL line or markdown section was removed or overwritten instead of appended/marked.
+- [`08.deleted-line`] Any existing JSONL line or markdown section was removed or overwritten instead of appended/marked (clones and DB copies in Do 14 are the only allowed deletions).
 - [`08.ev-profile-no-id`] A profile statement cites no decision, lesson, or followup id.
 - [`08.ev-proposal-below-threshold`] A proposal was written without meeting a threshold, or without evidence ids.
 - [`08.unapproved-change`] An override was written without an explicit yes.
-- [`08.edited-skill-files`] Any file under `${CLAUDE_SKILL_DIR}` was modified (approved changes belong in `overrides.md`).
+- [`08.edited-skill-files`] Any file under `<SKILL_DIR>` was modified (approved changes belong in `overrides.md`).
 - [`08.schema`] A JSONL line is missing a required field or uses a non-English key or enum value.
-- [`08.sent-data`] Any ledger content left the machine.
+- [`08.sent-data`] Any ledger content left the machine (short Track B search keywords excepted).

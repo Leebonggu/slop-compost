@@ -5,10 +5,11 @@ Sources are **read-only**: this skill never runs a scraper, never logs in, never
 
 ## Which list is used
 
-1. The list that counts is `$LEDGER/sources.md` (same format as `defaults.md`).
-2. If it does not exist (first run, or deleted by hand), copy `${CLAUDE_SKILL_DIR}/sources/defaults.md` to `$LEDGER/sources.md` before Track B starts (step 0 does this).
-3. **New defaults after a plugin update**: if `defaults.md` has ids that are not in the user's list (including entries marked `removed`), say once, in one line: "N new default sources (ids) - add them? (yes / no)". `yes` appends them; `no` appends them with `enabled: false` so the question is not repeated.
-4. Use only entries with `enabled: true` and no `removed` date.
+1. The list that counts is `<LEDGER>/sources.md` (same format as `defaults.md`).
+2. Only if it does not exist (first run, or deleted by hand), copy `<SKILL_DIR>/sources/defaults.md` to `<LEDGER>/sources.md` (step 0 does this; the `sources` subcommand does it too). Never overwrite an existing user list.
+3. **New defaults after a plugin update**: if `defaults.md` has ids not present in the user's list (an entry marked `removed` still counts as present), ask once, in one line: "N new default sources (ids) - add them? (yes / no)". In a pipeline run it goes with the step 0 follow-up question, or alone if there is none; in the `sources` subcommand it is asked before handling the command. `yes` appends them; `no` appends them with `enabled: false` so the question is not repeated.
+4. **Parsing**: each `## <id>` heading is one source; field lines are `- <field>: <value>`.
+5. Use only entries with `enabled: true` and no `removed` date.
 
 ## Source types
 
@@ -52,19 +53,26 @@ This is how a user plugs in their own scraper: point a `local` source at its out
 
 ## Lightweight mode
 
-If the run is `incremental` and the only new artifact is a single `idea` or `writing` artifact, Track B uses **one source per category** (the first enabled entry of each category; `failure` always included). Say so in "Sources checked".
+Applies when the run is `incremental` AND there is exactly 1 `new` artifact AND 0 `changed` artifacts AND that artifact is `idea` or `writing`. Track B then uses **one source per category** (the first enabled entry of each category), with one exception: the `failure` category keeps **both** `failory` and `failure-search` (if enabled). Say so in "Sources checked".
+
+## Request caps
+
+Stay within each entry's `limits`. When a cap is reached, skip the request and write `cap reached (<source id>)` where that evidence would go. Reaching a cap never composts a candidate.
 
 ## `sources` subcommand (CRUD)
 
-When the first word of the arguments is `sources`, SKILL.md skips the pipeline and handles the list in `$LEDGER/sources.md` (seed it from defaults first if missing):
+When the first word of the arguments is `sources` and no path named `sources` exists, SKILL.md skips the pipeline and handles the list in `<LEDGER>/sources.md`. Before the command: seed the list from defaults if it does not exist, and ask the new-defaults question if it applies (see "Which list is used").
 
 | command | behavior |
 |---|---|
-| `sources list` | Table: id, category, type, enabled, removed, and from `state.json.source_stats`: cited / cited in adopted. |
-| `sources add [id]` | Ask once, one line: `type, how, category` (e.g. `fetch, https://example.com/rss, trend`). Fill `limits` with the common default, `enabled: true`. Reject duplicate ids. |
-| `sources remove <id>` | Do not delete. Add `removed: <YYYY-MM-DD>` and `enabled: false`. |
-| `sources edit <id>` | Show the entry, ask once for `field=value` pairs on one line, apply. |
-| `sources enable <id>` / `sources disable <id>` | Set `enabled`. |
+| `sources list` | Table: id, category, type, enabled, removed/restored, and from `<LEDGER>/state.json` `source_stats`: cited / cited in adopted. If `state.json` does not exist, show `-` in the statistics columns. |
+| `sources add [id]` | Ask once, one line: `type, how, category` (e.g. `fetch, https://example.com/rss, trend`). Validate `type` (`web`, `fetch`, `local`, comma-combined) and `category` (`trend`, `ai-trend`, `revenue`, `failure`, `community-ko`); on an invalid value, show the allowed values and ask again. If `id` is omitted, derive a kebab-case slug from `how` (host name for a URL, last path segment for a folder or git ref; add `-2`, `-3` on collision). Fill `limits` with the common default, `enabled: true`. Reject duplicate ids. Insert the new `## <id>` block right after the last existing `## ` source, before the trailing "Not included" comment block. |
+| `sources remove <id>` | Do not delete. Add `removed: <YYYY-MM-DD>` and set `enabled: false`. |
+| `sources edit <id>` | Show the entry, ask once for `field=value` pairs on one line, one pair per field, values may be quoted (`how="site:example.com {keyword}" limits="1 search"`). Validate enums as in `add`. The `id` cannot be changed (suggest `remove` + `add`). |
+| `sources enable <id>` | Set `enabled: true`. If the entry has `removed`, clear it and add `restored: <YYYY-MM-DD>`. |
+| `sources disable <id>` | Set `enabled: false`. |
+
+An unknown verb, a missing id where one is required, or an id that does not exist: print the usage line `sources list | add [id] | remove <id> | edit <id> | enable <id> | disable <id>` and the existing ids, then stop.
 
 After each command, show the changed entry and stop.
 

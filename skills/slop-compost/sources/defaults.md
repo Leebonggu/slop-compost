@@ -1,6 +1,6 @@
 # Default sources
 
-Shipped with the skill. On the first run (or whenever `$LEDGER/sources.md` is missing) this file is copied to `$LEDGER/sources.md`, and from then on **the user's copy is the list that counts**. Rules for using sources: [README.md](README.md).
+Shipped with the skill. On the first run (or whenever `<LEDGER>/sources.md` is missing) this file is copied to `<LEDGER>/sources.md`, and from then on **the user's copy is the list that counts**. Rules for using sources: [README.md](README.md).
 
 Entry fields:
 
@@ -16,6 +16,8 @@ Entry fields:
 | `removed` | optional, `YYYY-MM-DD` (set by `sources remove`; the entry stays) |
 
 Common limit for every source: **1-2 requests per source per run** unless the entry says otherwise.
+
+**Parsing rule**: every `## ` heading in this file (and in `<LEDGER>/sources.md`) is exactly one source, and its text is the id. Do not use `## ` for anything else; notes go in HTML comments.
 
 ## hn-show
 - category: trend
@@ -53,7 +55,7 @@ Common limit for every source: **1-2 requests per source per run** unless the en
 - category: failure
 - type: fetch, web
 - how: lists `https://www.failory.com/cemetery` (about 135 failed startups), `https://www.failory.com/interview` (about 300 founder interviews about failure), `https://www.failory.com/google` (about 100 discontinued Google products); detail pages `https://www.failory.com/cemetery/<slug>`, `/interview/<slug>`, `/google/<slug>`; search `site:failory.com/cemetery {keyword}`, `site:failory.com/interview {keyword}`; slug lookup: fetch `https://www.failory.com/sitemap.xml` once and grep for the keyword
-- limits: 1 list (or sitemap) request + at most 2 detail pages per run. robots.txt disallows only `/startup/`, `/get/`, `/author/`: never fetch those paths.
+- limits: 1 list (or sitemap) request + at most 3 detail pages per run. robots.txt disallows only `/startup/`, `/get/`, `/author/`: never fetch those paths.
 - notes: Detail pages have structured fields: Country, Started, Closed, Outcome, Cause, Funding. When citing counter-evidence, quote **Cause** and the **Closed** year from these fields.
 - enabled: true
 
@@ -61,8 +63,8 @@ Common limit for every source: **1-2 requests per source per run** unless the en
 - category: failure
 - type: web
 - how: `{keyword} startup shut down post-mortem`; Korean `{keyword} 서비스 종료 후기`
-- limits: 2 searches (one per language)
-- notes: General failure-case search. Always run for every Track B candidate (survivorship-bias guard).
+- limits: 1 search per candidate, at most 4 per run (mix languages as useful). When the cap is reached, skip and note `cap reached (failure-search)`.
+- notes: General failure-case search. Always run for every Track B candidate (survivorship-bias guard), also in lightweight mode.
 - enabled: true
 
 ## geeknews
@@ -89,7 +91,8 @@ Common limit for every source: **1-2 requests per source per run** unless the en
 - notes: Rising search topics. Treat growth claims as trend signals, not demand proof.
 - enabled: true
 
-## Not included (and why)
+<!--
+Not included (and why):
 
 | Source | Reason |
 |---|---|
@@ -97,3 +100,4 @@ Common limit for every source: **1-2 requests per source per run** unless the en
 | Reddit | robots.txt disallows all crawling. |
 | Indie Hackers | Returns 403 to automated fetch. A user may add it with `sources add` if it works in their environment. |
 | Subscription-gated idea banks | Paid or member-only content is never fetched. If the user has downloaded material they are entitled to, add it as a `local` source. |
+-->

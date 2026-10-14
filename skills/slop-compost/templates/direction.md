@@ -1,4 +1,4 @@
-# Template - direction (`$LEDGER/runs/<run-id>.md`, shown in step 6)
+# Template - direction (`<LEDGER>/runs/<run-id>.md`, shown in step 6)
 
 Translate headings and prose into the user's language. Keep labels (A1, B1), ids, and enum values as is.
 

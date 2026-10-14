@@ -1,4 +1,4 @@
-# Template - lessons (`$LEDGER/lessons.md`)
+# Template - lessons (`<LEDGER>/lessons.md`)
 
 Append one dated section per run. Never edit older sections except the `repeat` line and added evidence of a repeated lesson.
 
@@ -18,9 +18,11 @@ Append one dated section per run. Never edit older sections except the `repeat` 
 - Falsifier: ...
 - Stop reasons: abandoned
 - Repeat: 1
+- Related: L2 (L2 is the cause, L5 the reaction: separate lessons)
 ```
 
 Rules:
+- `Related:` (optional) links lessons about the same failure that are not duplicates, e.g. a cause lesson and a reaction lesson.
 - One claim per lesson. Evidence location is mandatory and must exist.
 - `[structural habit]` when `Repeat >= 3`.
 - A repeated lesson keeps its original id; add the new evidence and update `Repeat` in its original section, and list it again in the new section as `### L2 - (repeat, see 2026-09-01)` with the new evidence only.

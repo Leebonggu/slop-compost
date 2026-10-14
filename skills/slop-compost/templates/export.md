@@ -1,4 +1,4 @@
-# Template - export (`$LEDGER/export/<run-id>.md`)
+# Template - export (`<LEDGER>/export/<run-id>.md`)
 
 **v1: format only.** Nothing is sent anywhere. The file is written only when the user asks for an export.
 The format exists so a future opt-in "public idea graveyard" can accept it. Sending will always require the user's consent per export.

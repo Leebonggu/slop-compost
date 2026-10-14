@@ -1,4 +1,4 @@
-# Template - artifact card (`$LEDGER/artifacts/<id>.md`)
+# Template - artifact card (`<LEDGER>/artifacts/<id>.md`)
 
 Translate headings into the user's language. Keep the front-matter keys and enum values in English.
 

@@ -5,7 +5,7 @@ Turn the analysis into falsifiable, evidence-located lessons and count how often
 ## Inputs
 
 - Step 2 output (parts, stop reasons, cross-artifact behaviors).
-- `$LEDGER/lessons.md` (all past lessons with ids and repeat counts).
+- `<LEDGER>/lessons.md` (all past lessons with ids and repeat counts).
 - Format: [../templates/lesson.md](../templates/lesson.md).
 
 ## Do
@@ -19,12 +19,12 @@ Turn the analysis into falsifiable, evidence-located lessons and count how often
 2. Compare with past lessons in `lessons.md`. If a new lesson says the same thing (same behavior and same trigger), do not create a duplicate: reuse the old id and increment `repeat`, adding the new evidence.
    Not a duplicate: a **cause** lesson and a **reaction** lesson about the same failure. Example: "Without my own context in the prompt, the output is generic and I lose interest" (cause) vs "When LLM output disappoints, I quit before revising the prompt or adding review" (reaction) are two lessons; link them with a `Related:` line.
 3. Lessons with `repeat >= 3` are promoted to **structural habit**. Mark them and put them first.
-4. Keep 3-7 lessons per run. Prefer lessons that connect to a stop reason.
+4. At most 7 lessons per run. Never invent a lesson without evidence just to reach a count: zero new lessons is a valid result. Prefer lessons that connect to a stop reason.
 5. Assign ids `L<n>` continuing the highest id in `lessons.md` (start at `L1`).
 
 ## Output
 
-- Lesson list (id, sentence, evidence, falsifier, stop reasons, repeat, habit flag) staged in `$LEDGER/runs/<run-id>.work/lessons.md`.
+- Lesson list (id, sentence, evidence, falsifier, stop reasons, repeat, habit flag) staged in `<LEDGER>/runs/<run-id>.work/lessons.md`.
 
 ## Reject if
 
